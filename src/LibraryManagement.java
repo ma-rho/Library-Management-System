@@ -1,76 +1,135 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
+import java.io.*;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 public class LibraryManagement {
     public static void main(String[] args) {
-        Scanner addBook = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
+
         try {
+            // Initialize the library file with predefined books if it's empty
             FileWriter csvWriter = new FileWriter("Library Management System.csv", true);
-            csvWriter.append("ISBN, Author, Title, Publication Year, Access Mode\n");
-
-            //Writing data to file
-            String[][] predefinedBooks = {
-                    {"35667", "Jones", "Introduction to Programming", "2010", "1"},
-                    {"33333", "Richardson", "Java Programming", "2022", "1"},
-                    {"66445", "Leach", "Web Development", "1980", "1"}
-            };
-
-            //Write each list to the file
-            for (String[] book : predefinedBooks) {
-                csvWriter.append(String.join(", ", book)).append("\n");
-            }
-
-            // Check for duplicates by reading the current ISBNs in the file
-            Set<String> existingISBNs = new HashSet<>();
             BufferedReader csvReader = new BufferedReader(new FileReader("Library Management System.csv"));
+
+            if (csvReader.readLine() == null) { // Check if file is empty
+                csvWriter.append("ISBN, Author, Title, Publication Year\n");
+                String[][] predefinedBooks = {
+                        {"33333", "Richardson", "Java Programming", "2022"},
+                        {"66445", "Leach", "Web Development", "1980"}
+                };
+                for (String[] book : predefinedBooks) {
+                    csvWriter.append(String.join(", ", book)).append("\n");
+                }
+            }
+            csvReader.close();
+            csvWriter.close();
+
+            // Main menu for user actions
+            while (true) {
+                System.out.println("\nLibrary Management System");
+                System.out.println("1. Add a Book");
+                System.out.println("2. Delete a Book");
+                System.out.println("3. Exit");
+                System.out.print("Enter your choice: ");
+                String choice = scanner.nextLine();
+
+                switch (choice) {
+                    case "1":
+                        addBook(scanner);
+                        break;
+                    case "2":
+                        deleteBook(scanner);
+                        break;
+                    case "3":
+                        System.out.println("Exiting the program. Goodbye!");
+                        return;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        } finally {
+            scanner.close();
+        }
+    }
+
+    // Method to add a book
+    private static void addBook(Scanner scanner) throws IOException {
+        Set<String> existingISBNs = new HashSet<>();
+        try (BufferedReader csvReader = new BufferedReader(new FileReader("Library Management System.csv"))) {
             String line;
             while ((line = csvReader.readLine()) != null) {
                 String[] fields = line.split(", ");
                 if (fields.length > 0) {
-                    existingISBNs.add(fields[0].trim());  // Assuming ISBN is the first field
+                    existingISBNs.add(fields[0].trim()); // Assuming ISBN is the first field
                 }
             }
-            csvReader.close();
+        }
 
-            // Add books to library catalog
-            System.out.println("Enter details for a new book to add: ");
+        System.out.println("\nEnter details for a new book:");
+        System.out.print("Enter ISBN: ");
+        String ISBN = scanner.nextLine();
 
-            // Input the new book details
-            System.out.println("Enter ISBN: ");
-            String ISBN = addBook.nextLine();
+        if (existingISBNs.contains(ISBN)) {
+            System.out.println("Error: This ISBN already exists in the catalog!");
+            return;
+        }
 
-            // Check if ISBN already exists
-            if (existingISBNs.contains(ISBN)) {
-                System.out.println("Error: This ISBN already exists in the catalog!");
-            } else {
-                System.out.println("Enter Author: ");
-                String author = addBook.nextLine();
-                System.out.println("Enter Title: ");
-                String title = addBook.nextLine();
-                System.out.println("Enter Publication Year: ");
-                String year = addBook.nextLine();
-                System.out.println("Enter Access Mode (1 for updatable, 0 for non-updatable): ");
-                String accessMode = addBook.nextLine();
+        System.out.print("Enter Author: ");
+        String author = scanner.nextLine();
+        System.out.print("Enter Title: ");
+        String title = scanner.nextLine();
+        System.out.print("Enter Publication Year: ");
+        String year = scanner.nextLine();
 
-                csvWriter.append(ISBN).append(", ")
-                        .append(author).append(", ")
-                        .append(title).append(", ")
-                        .append(year).append(", ")
-                        .append(accessMode).append("\n");
+        try (FileWriter csvWriter = new FileWriter("Library Management System.csv", true)) {
+            csvWriter.append(ISBN).append(", ")
+                    .append(author).append(", ")
+                    .append(title).append(", ")
+                    .append(year).append("\n");
 
-                System.out.println("Book added successfully!");
-                csvWriter.close();
+            System.out.println("Book added successfully!");
+        }
+    }
+
+    // Method to delete a book
+    private static void deleteBook(Scanner scanner) throws IOException {
+        System.out.print("\nEnter the ISBN of the book you want to delete: ");
+        String deleteISBN = scanner.nextLine();
+
+        File inputFile = new File("Library Management System.csv");
+        File tempFile = new File("temp.csv");
+        boolean isDeleted = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+             FileWriter writer = new FileWriter(tempFile)) {
+
+            String currentLine;
+            while ((currentLine = reader.readLine()) != null) {
+                String[] fields = currentLine.split(", ");
+                if (fields.length > 0 && fields[0].trim().equals(deleteISBN)) {
+                    isDeleted = true; // Skip writing this line to the temp file
+                    continue;
+                }
+                writer.write(currentLine + "\n");
             }
 
-            csvWriter.close(); // Close the file
-            addBook.close(); // Close the scanner
-        } catch (IOException e) {
-            System.out.println("An error occurred." + e.getMessage());
+            if (isDeleted) {
+                System.out.println("Book with ISBN " + deleteISBN + " has been deleted.");
+            } else {
+                System.out.println("Book with ISBN " + deleteISBN + " not found.");
+            }
+        }
+
+        // Replace the original file with the temp file
+        if (!inputFile.delete()) {
+            System.out.println("Could not delete the original file.");
+            return;
+        }
+        if (!tempFile.renameTo(inputFile)) {
+            System.out.println("Could not rename the temp file.");
         }
     }
 }
