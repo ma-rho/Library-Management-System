@@ -3,7 +3,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-public class LibraryManagement (1){
+public class LibraryManagement{
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
