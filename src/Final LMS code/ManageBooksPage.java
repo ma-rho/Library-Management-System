@@ -133,4 +133,33 @@ public class ManageBooksPage {
             e.printStackTrace();
         }
     }
+    private void addBook() {
+        String isbn = isbnField.getText();
+        String title = titleField.getText();
+        String author = authorField.getText();
+        String year = yearField.getText();
+        String available = availableField.getText();
+
+        if (isbn.isEmpty() || title.isEmpty() || author.isEmpty() || year.isEmpty() || available.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "All fields must be filled out.");
+            return;
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "INSERT INTO books (isbn, title, author, publication_year, is_available) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, isbn);
+            stmt.setString(2, title);
+            stmt.setString(3, author);
+            stmt.setInt(4, Integer.parseInt(year));
+            stmt.setBoolean(5, Boolean.parseBoolean(available));
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(frame, "Book added successfully!");
+            loadBooksData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Error adding book.");
+        }
+    }
 }
