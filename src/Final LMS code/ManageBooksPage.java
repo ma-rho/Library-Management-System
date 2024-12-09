@@ -162,4 +162,64 @@ public class ManageBooksPage {
             JOptionPane.showMessageDialog(frame, "Error adding book.");
         }
     }
+    private void updateBook() {
+        int selectedRow = booksTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select a book to update.");
+            return;
+        }
+
+        int bookId = (int) booksTable.getValueAt(selectedRow, 0);
+        String isbn = isbnField.getText();
+        String title = titleField.getText();
+        String author = authorField.getText();
+        String year = yearField.getText();
+        String available = availableField.getText();
+
+        if (isbn.isEmpty() || title.isEmpty() || author.isEmpty() || year.isEmpty() || available.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "All fields must be filled out.");
+            return;
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "UPDATE books SET isbn = ?, title = ?, author = ?, publication_year = ?, is_available = ? WHERE book_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, isbn);
+            stmt.setString(2, title);
+            stmt.setString(3, author);
+            stmt.setInt(4, Integer.parseInt(year));
+            stmt.setBoolean(5, Boolean.parseBoolean(available));
+            stmt.setInt(6, bookId);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(frame, "Book updated successfully!");
+            loadBooksData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Error updating book.");
+        }
+    }
+
+    private void deleteBook() {
+        int selectedRow = booksTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select a book to delete.");
+            return;
+        }
+
+        int bookId = (int) booksTable.getValueAt(selectedRow, 0);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "DELETE FROM books WHERE book_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, bookId);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(frame, "Book deleted successfully!");
+            loadBooksData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Error deleting book.");
+        }
+    }
 }
