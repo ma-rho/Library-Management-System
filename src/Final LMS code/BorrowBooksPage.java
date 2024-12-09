@@ -92,4 +92,40 @@ public class BorrowBooksPage {
             e.printStackTrace();
         }
     }
+
+    private void borrowBook() {
+        int selectedRow = booksTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select a book to borrow.");
+            return;
+        }
+
+        int bookId = (int) booksTable.getValueAt(selectedRow, 0);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "UPDATE books SET is_available = FALSE WHERE book_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, bookId);
+            stmt.executeUpdate();
+
+            String userQuery = "SELECT user_id FROM users WHERE username = ?";
+            PreparedStatement userStmt = conn.prepareStatement(userQuery);
+            userStmt.setString(1, username);
+            ResultSet userRs = userStmt.executeQuery();
+
+            if (userRs.next()) {
+                int userId = userRs.getInt("user_id");
+                String loanQuery = "INSERT INTO loans (book_id, user_id, due_date) VALUES (?, ?, DATE_ADD(CURDATE(), INTERVAL 14 DAY))";
+                PreparedStatement loanStmt = conn.prepareStatement(loanQuery);
+                loanStmt.setInt(1, bookId);
+                loanStmt.setInt(2, userId);
+                loanStmt.executeUpdate();
+
+                JOptionPane.showMessageDialog(frame, "Book borrowed successfully! Due in 14 days.");
+                loadAvailableBooks(); // Refresh the table
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
