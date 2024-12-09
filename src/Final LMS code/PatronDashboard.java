@@ -30,6 +30,7 @@ public class PatronDashboard {
         JButton borrowBooksButton = new JButton("Borrow Books");
         JButton returnBooksButton = new JButton("Return Books");
         JButton loanHistoryButton = new JButton("Loan History");
+        JButton renewLoanButton = new JButton("Renew Loan");
         JButton backButton = new JButton("Back");
 
         viewBooksButton.setBackground(new Color(0, 102, 204));
@@ -40,6 +41,8 @@ public class PatronDashboard {
         returnBooksButton.setForeground(Color.WHITE);
         loanHistoryButton.setBackground(new Color(0, 102, 204));
         loanHistoryButton.setForeground(Color.WHITE);
+        renewLoanButton.setBackground(new Color(0, 102, 204));
+        renewLoanButton.setForeground(Color.WHITE);
         backButton.setBackground(new Color(128, 128, 128));
         backButton.setForeground(Color.WHITE);
 
@@ -55,7 +58,7 @@ public class PatronDashboard {
         borrowBooksButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new BorrowBooksPage(PatronDashboard.this, username);
+                new BorrowBooksPage(library.management.gui.PatronDashboard.this, username);
                 frame.dispose();
             }
         });
@@ -63,7 +66,7 @@ public class PatronDashboard {
         returnBooksButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new ReturnBooksPage(PatronDashboard.this, username);
+                new ReturnBooksPage(library.management.gui.PatronDashboard.this, username);
                 frame.dispose();
             }
         });
@@ -71,8 +74,17 @@ public class PatronDashboard {
         loanHistoryButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new LoanHistoryPage(PatronDashboard.this, username);
+                new LoanHistoryPage(library.management.gui.PatronDashboard.this, username);
                 frame.dispose();
+            }
+        });
+
+        renewLoanButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new RenewLoanPage(library.management.gui.PatronDashboard.this, username);
+                frame.dispose();
+
             }
         });
 
@@ -88,6 +100,7 @@ public class PatronDashboard {
         buttonPanel.add(borrowBooksButton);
         buttonPanel.add(returnBooksButton);
         buttonPanel.add(loanHistoryButton);
+        buttonPanel.add(renewLoanButton);
         buttonPanel.add(backButton);
 
         frame.add(title, BorderLayout.NORTH);
