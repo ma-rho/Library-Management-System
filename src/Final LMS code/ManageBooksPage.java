@@ -199,4 +199,27 @@ public class ManageBooksPage {
             JOptionPane.showMessageDialog(frame, "Error updating book.");
         }
     }
+
+    private void deleteBook() {
+        int selectedRow = booksTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select a book to delete.");
+            return;
+        }
+
+        int bookId = (int) booksTable.getValueAt(selectedRow, 0);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "DELETE FROM books WHERE book_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, bookId);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(frame, "Book deleted successfully!");
+            loadBooksData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Error deleting book.");
+        }
+    }
 }
