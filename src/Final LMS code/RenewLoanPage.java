@@ -66,4 +66,39 @@ public class RenewLoanPage {
 
         frame.setVisible(true);
     }
+<<<<<<< HEAD
+    
+    private void loadBorrowedBooks() {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = """
+                SELECT l.loan_id, b.title, l.due_date 
+                FROM loans l 
+                JOIN books b ON l.book_id = b.book_id 
+                JOIN users u ON l.user_id = u.user_id 
+                WHERE u.username = ? AND l.return_date IS NULL
+            """;
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            loansTable.setModel(new javax.swing.table.DefaultTableModel(
+                    new Object[][]{},
+                    new String[]{"Loan ID", "Book Title", "Due Date"}
+            ));
+
+            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) loansTable.getModel();
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                        rs.getInt("loan_id"),
+                        rs.getString("title"),
+                        rs.getDate("due_date")
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Error loading borrowed books.");
+        }
+    }
+=======
+>>>>>>> 12e998b7d4e1808395828cba1d33649ec9bef5d7
 }
