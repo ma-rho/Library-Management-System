@@ -66,6 +66,7 @@ public class RenewLoanPage {
 
         frame.setVisible(true);
     }
+<<<<<<< HEAD
     
     private void loadBorrowedBooks() {
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -98,4 +99,6 @@ public class RenewLoanPage {
             JOptionPane.showMessageDialog(frame, "Error loading borrowed books.");
         }
     }
+=======
+>>>>>>> 12e998b7d4e1808395828cba1d33649ec9bef5d7
 }
