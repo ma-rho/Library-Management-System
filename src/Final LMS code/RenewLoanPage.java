@@ -66,7 +66,6 @@ public class RenewLoanPage {
 
         frame.setVisible(true);
     }
-<<<<<<< HEAD
     
     private void loadBorrowedBooks() {
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -99,6 +98,27 @@ public class RenewLoanPage {
             JOptionPane.showMessageDialog(frame, "Error loading borrowed books.");
         }
     }
-=======
->>>>>>> 12e998b7d4e1808395828cba1d33649ec9bef5d7
+    private void renewLoan() {
+        int selectedRow = loansTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select a loan to renew.");
+            return;
+        }
+
+        int loanId = (int) loansTable.getValueAt(selectedRow, 0);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Extend due date by 7 days
+            String query = "UPDATE loans SET due_date = DATE_ADD(due_date, INTERVAL 7 DAY) WHERE loan_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, loanId);
+            stmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(frame, "Loan renewed successfully! Due date extended by 7 days.");
+            loadBorrowedBooks(); // Refresh table
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Error renewing loan.");
+        }
+    }
 }
