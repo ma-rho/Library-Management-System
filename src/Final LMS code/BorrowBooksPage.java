@@ -66,4 +66,30 @@ public class BorrowBooksPage {
 
         frame.setVisible(true);
     }
+
+    private void loadAvailableBooks() {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM books WHERE is_available = TRUE";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+
+            booksTable.setModel(new javax.swing.table.DefaultTableModel(
+                    new Object[][]{},
+                    new String[]{"Book ID", "ISBN", "Title", "Author", "Year"}
+            ));
+
+            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) booksTable.getModel();
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                        rs.getInt("book_id"),
+                        rs.getString("isbn"),
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getInt("publication_year")
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
