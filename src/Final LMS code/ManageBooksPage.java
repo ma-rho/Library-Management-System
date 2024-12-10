@@ -16,6 +16,7 @@ public class ManageBooksPage {
     private JTable booksTable;
     private JTextField isbnField, titleField, authorField, yearField, availableField;
 
+    //JFrame created for thw window where admin users can add, update or delete the books in the library
     public ManageBooksPage(AdminDashboard adminDashboard) {
         this.adminDashboard = adminDashboard;
 
@@ -70,6 +71,7 @@ public class ManageBooksPage {
         JScrollPane scrollPane = new JScrollPane(booksTable);
         loadBooksData();
 
+        //button functionality added so when buttons are clicked, the associated function is run
         addBookButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -99,6 +101,7 @@ public class ManageBooksPage {
             }
         });
 
+        //layout of the window is defined
         frame.add(title, BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.add(formPanel, BorderLayout.WEST);
@@ -107,6 +110,7 @@ public class ManageBooksPage {
         frame.setVisible(true);
     }
 
+    //function to load all the books available in the library from the database
     private void loadBooksData() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "SELECT * FROM books";
@@ -133,6 +137,8 @@ public class ManageBooksPage {
             e.printStackTrace();
         }
     }
+
+    //function to add a book to the library - admin user is required to add all elements of the book to successfully add it to the library, e.g. title, author, ISBN number, etc.
     private void addBook() {
         String isbn = isbnField.getText();
         String title = titleField.getText();
@@ -145,6 +151,7 @@ public class ManageBooksPage {
             return;
         }
 
+        //database is updated if connected successfully
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "INSERT INTO books (isbn, title, author, publication_year, is_available) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -162,6 +169,8 @@ public class ManageBooksPage {
             JOptionPane.showMessageDialog(frame, "Error adding book.");
         }
     }
+
+    //function created for admin user to update books - all fields need to be filled in with the updated details which need to be changed, then click on book and press update button
     private void updateBook() {
         int selectedRow = booksTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -181,6 +190,7 @@ public class ManageBooksPage {
             return;
         }
 
+        //database is updated if connected successfully
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "UPDATE books SET isbn = ?, title = ?, author = ?, publication_year = ?, is_available = ? WHERE book_id = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -200,6 +210,7 @@ public class ManageBooksPage {
         }
     }
 
+    //function for admin user to delete a book from the library - all fields need to be completed and the book needs to be selected to be successfully deleted
     private void deleteBook() {
         int selectedRow = booksTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -209,6 +220,7 @@ public class ManageBooksPage {
 
         int bookId = (int) booksTable.getValueAt(selectedRow, 0);
 
+        //database is updated if connected successfully
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "DELETE FROM books WHERE book_id = ?";
             PreparedStatement stmt = conn.prepareStatement(query);

@@ -122,7 +122,7 @@ public class ReturnBooksPage {
             e.printStackTrace();
         }
     }
-
+// this method checks if the book needs to be returned within 14 days
     private void sendNotification() {
         SwingUtilities.invokeLater(() -> {
             try (Connection conn = DatabaseConnection.getConnection()) {

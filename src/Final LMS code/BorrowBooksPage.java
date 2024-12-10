@@ -16,6 +16,7 @@ public class BorrowBooksPage {
     private JTable booksTable;
     private String username;
 
+    //JFrame created to display the GUI for the user to borrow a book
     public BorrowBooksPage(PatronDashboard patronDashboard, String username) {
         this.patronDashboard = patronDashboard;
         this.username = username;
@@ -67,6 +68,7 @@ public class BorrowBooksPage {
         frame.setVisible(true);
     }
 
+    //function to attempt to connect to the database and load books available for borrowing
     private void loadAvailableBooks() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "SELECT * FROM books WHERE is_available = TRUE";
@@ -88,11 +90,12 @@ public class BorrowBooksPage {
                         rs.getInt("publication_year")
                 });
             }
-        } catch (Exception e) {
+        } catch (Exception e) { //if unable to connect to database, print error
             e.printStackTrace();
         }
     }
 
+    // function to allow a user to borrow a book and update the table accordingly so whatever book has been borrowed is no longer available to be borrowed by another user
     private void borrowBook() {
         int selectedRow = booksTable.getSelectedRow();
         if (selectedRow == -1) {

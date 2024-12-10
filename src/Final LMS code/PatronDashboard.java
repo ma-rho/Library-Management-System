@@ -10,6 +10,7 @@ public class PatronDashboard {
     private LoginPage loginPage;
     private String username;
 
+    //JFrame created for GUI window so users can easily navigate the main menu options available to them
     public PatronDashboard(LoginPage loginPage, String username) {
         this.loginPage = loginPage;
         this.username = username;
@@ -46,6 +47,7 @@ public class PatronDashboard {
         backButton.setBackground(new Color(128, 128, 128));
         backButton.setForeground(Color.WHITE);
 
+        //functionality added to buttons so that when the button is clicked, the relevant page is loaded
         viewBooksButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -96,6 +98,7 @@ public class PatronDashboard {
             }
         });
 
+        //buttons are added to the screen
         buttonPanel.add(viewBooksButton);
         buttonPanel.add(borrowBooksButton);
         buttonPanel.add(returnBooksButton);
