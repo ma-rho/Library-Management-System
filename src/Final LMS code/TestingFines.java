@@ -1,7 +1,7 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Fines {
+public class TestingFines {
 
     // Function to calculate and manage overdue fines
     public static void manageFine() {
