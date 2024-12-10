@@ -16,6 +16,7 @@ public class RenewLoanPage {
     private JTable loansTable;
     private String username;
 
+    //JFrame created for GUI window so the user can easily renew any of their books due date by 7 days
     public RenewLoanPage(PatronDashboard patronDashboard, String username) {
         this.patronDashboard = patronDashboard;
         this.username = username;
@@ -41,6 +42,7 @@ public class RenewLoanPage {
         JScrollPane scrollPane = new JScrollPane(loansTable);
         loadBorrowedBooks();
 
+        //functionality added to the buttons so the relevant function is started once its corresponding button is pressed
         renewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,7 +68,8 @@ public class RenewLoanPage {
 
         frame.setVisible(true);
     }
-    
+
+    //function to load the books the user has borrowed so only their borrow books due dates can be extended - try-catch block added to test if the database has connected to the window
     private void loadBorrowedBooks() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = """
@@ -98,6 +101,8 @@ public class RenewLoanPage {
             JOptionPane.showMessageDialog(frame, "Error loading borrowed books.");
         }
     }
+
+    //function to renew loan on borrowed book by 7 days - once the selected book and renew book button has been pressed, database is updated if connected
     private void renewLoan() {
         int selectedRow = loansTable.getSelectedRow();
         if (selectedRow == -1) {
