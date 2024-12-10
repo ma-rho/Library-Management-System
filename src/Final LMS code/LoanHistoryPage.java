@@ -16,6 +16,7 @@ public class LoanHistoryPage {
     private JTable historyTable;
     private String username;
 
+    //JFrame created for the GUI window so the user can easily see which books they have borrowed and when
     public LoanHistoryPage(PatronDashboard patronDashboard, String username) {
         this.patronDashboard = patronDashboard;
         this.username = username;
@@ -41,6 +42,7 @@ public class LoanHistoryPage {
         JScrollPane scrollPane = new JScrollPane(historyTable);
         loadLoanHistory();
 
+        //functionality added to the buttons so that when the user clicks the buttons, the relevant functions are started
         payFineButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,6 +69,7 @@ public class LoanHistoryPage {
         frame.setVisible(true);
     }
 
+    //function to load patron users' loan history from the connected database, if the database is connected
     private void loadLoanHistory() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "SELECT l.loan_id, b.title, l.loan_date, l.due_date, l.return_date, l.fine " +
@@ -99,6 +102,7 @@ public class LoanHistoryPage {
         }
     }
 
+    //function to allow a user to pay fines, and update the database with the remaining amount let to pay
     private void payFine() {
         int selectedRow = historyTable.getSelectedRow();
         if (selectedRow == -1) {
