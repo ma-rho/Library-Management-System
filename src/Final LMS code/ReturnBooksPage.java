@@ -107,6 +107,22 @@ public class ReturnBooksPage {
             stmt.setInt(1, loanId);
             stmt.executeUpdate();
 
+            // Prompt for rating
+            String ratingInput = JOptionPane.showInputDialog(frame, 
+                "Please rate the book \"" + "\" (1-5):", "Rate Book", JOptionPane.PLAIN_MESSAGE);
+            int rating = Integer.parseInt(ratingInput);
+
+            if (rating >= 1 && rating <= 5) {
+                String ratingQuery = "INSERT INTO ratings (book_id, rating) " +
+                                    "VALUES ((SELECT book_id FROM loans WHERE loan_id = ?), ?)";
+                PreparedStatement ratingStmt = conn.prepareStatement(ratingQuery);
+                ratingStmt.setInt(1, loanId);
+                ratingStmt.setInt(2, rating);
+                ratingStmt.executeUpdate();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Invalid rating. Please provide a number between 1 and 5.");
+            }
+
             // Make the book available again
             String bookQuery = "UPDATE books SET is_available = TRUE WHERE book_id = (SELECT book_id FROM loans WHERE loan_id = ?)";
             PreparedStatement bookStmt = conn.prepareStatement(bookQuery);

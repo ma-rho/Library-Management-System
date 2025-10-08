@@ -7,8 +7,8 @@ public class Book {
     private String author;
     private int publicationYear;
     private boolean isAvailable;
+    private double averageRating; // New field for average rating
 
-    // Constructor, Getters, and Setters
     public Book(int bookId, String isbn, String title, String author, int publicationYear, boolean isAvailable) {
         this.bookId = bookId;
         this.isbn = isbn;
@@ -18,6 +18,7 @@ public class Book {
         this.isAvailable = isAvailable;
     }
 
+    // Getters and Setters
     public int getBookId() {
         return bookId;
     }
@@ -44,5 +45,13 @@ public class Book {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
     }
 }

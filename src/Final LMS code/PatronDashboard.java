@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class PatronDashboard {
     private JFrame frame;
@@ -33,7 +36,11 @@ public class PatronDashboard {
         JButton loanHistoryButton = new JButton("Loan History");
         JButton renewLoanButton = new JButton("Renew Loan");
         JButton backButton = new JButton("Back");
+        JButton recommendedBooksButton = new JButton("Recommended Books");
 
+
+        recommendedBooksButton.setBackground(new Color(0, 102, 204));
+        recommendedBooksButton.setForeground(Color.WHITE);
         viewBooksButton.setBackground(new Color(0, 102, 204));
         viewBooksButton.setForeground(Color.WHITE);
         borrowBooksButton.setBackground(new Color(0, 102, 204));
@@ -46,6 +53,9 @@ public class PatronDashboard {
         renewLoanButton.setForeground(Color.WHITE);
         backButton.setBackground(new Color(128, 128, 128));
         backButton.setForeground(Color.WHITE);
+
+        //Functionality for Recommended books button
+        recommendedBooksButton.addActionListener(e -> displayRecommendedBooks());
 
         //functionality added to buttons so that when the button is clicked, the relevant page is loaded
         viewBooksButton.addActionListener(new ActionListener() {
@@ -105,6 +115,7 @@ public class PatronDashboard {
         buttonPanel.add(loanHistoryButton);
         buttonPanel.add(renewLoanButton);
         buttonPanel.add(backButton);
+        buttonPanel.add(recommendedBooksButton);
 
         frame.add(title, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.CENTER);
@@ -114,5 +125,49 @@ public class PatronDashboard {
 
     public void show() {
         frame.setVisible(true);
+    }
+
+    private void displayRecommendedBooks() {
+        JFrame recommendationsFrame = new JFrame("Recommended Books");
+        recommendationsFrame.setSize(600, 400);
+        recommendationsFrame.setLayout(new BorderLayout());
+    
+        JLabel title = new JLabel("Recommended Books", JLabel.CENTER);
+        title.setFont(new Font("Calibri", Font.BOLD, 24));
+        title.setForeground(new Color(0, 102, 204));
+    
+        JTable recommendationsTable = new JTable();
+        JScrollPane scrollPane = new JScrollPane(recommendationsTable);
+    
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "SELECT b.title, b.author, AVG(r.rating) AS avg_rating " +
+                           "FROM books b " +
+                           "JOIN ratings r ON b.book_id = r.book_id " +
+                           "GROUP BY b.book_id " +
+                           "ORDER BY avg_rating DESC " +
+                           "LIMIT 10";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+    
+            recommendationsTable.setModel(new javax.swing.table.DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Title", "Author", "Average Rating"}
+            ));
+    
+            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) recommendationsTable.getModel();
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("title"),
+                    rs.getString("author"),
+                    rs.getDouble("avg_rating")
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        recommendationsFrame.add(title, BorderLayout.NORTH);
+        recommendationsFrame.add(scrollPane, BorderLayout.CENTER);
+        recommendationsFrame.setVisible(true);
     }
 }

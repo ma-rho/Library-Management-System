@@ -86,7 +86,7 @@ public class LoginPage {
                 String role = rs.getString("role");
                 frame.dispose();
                 if ("admin".equalsIgnoreCase(role)) {
-                    new AdminDashboard(this);
+                    new library.management.gui.AdminDashboard(this);
                 } else if ("patron".equalsIgnoreCase(role)) {
                     new PatronDashboard(this, username);
                 }

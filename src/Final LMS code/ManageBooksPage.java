@@ -12,12 +12,12 @@ import java.sql.ResultSet;
 
 public class ManageBooksPage {
     private JFrame frame;
-    private AdminDashboard adminDashboard;
+    private library.management.gui.AdminDashboard adminDashboard;
     private JTable booksTable;
     private JTextField isbnField, titleField, authorField, yearField, availableField;
 
     //JFrame created for thw window where admin users can add, update or delete the books in the library
-    public ManageBooksPage(AdminDashboard adminDashboard) {
+    public ManageBooksPage(library.management.gui.AdminDashboard adminDashboard) {
         this.adminDashboard = adminDashboard;
 
         frame = new JFrame("Manage Books");

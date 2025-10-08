@@ -21,7 +21,7 @@ public class LibraryManagement{
             // Main menu for user actions
             while (true) {
                 System.out.println("\nLibrary Management System");
-                System.out.println("1. Add a Book\n2. Delete a Book\n3. Update a Book\n4. Exit");
+                System.out.println("1. Add a Book\n2. Delete a Book\n3. Update a Book\n4. Show Recommended Books\n5. Exit");
                 System.out.print("Enter your choice: ");
                 String choice = scanner.nextLine();
 
@@ -36,6 +36,9 @@ public class LibraryManagement{
                         updateBook(scanner);
                         break;
                     case "4":
+                        showRecommendedBooks();
+                        break;
+                    case "5":
                         System.out.println("Exiting the program. Goodbye!");
                         return;
                     default:
@@ -217,6 +220,29 @@ public class LibraryManagement{
         }
         if (!tempFile.renameTo(inputFile)) {
             System.out.println("Could not rename the temp file.");
+        }
+    }
+
+    private static void showRecommendedBooks() throws IOException {
+        try (BufferedReader csvReader = new BufferedReader(new FileReader("Library Management System.csv"))) {
+            String line;
+            System.out.println("\nRecommended Books (Rating >= 4.0):");
+            boolean found = false;
+
+            while ((line = csvReader.readLine()) != null) {
+                String[] fields = line.split(", ");
+                if (fields.length > 4) {
+                    double rating = Double.parseDouble(fields[4].trim());
+                    if (rating >= 4.0) {
+                        found = true;
+                        System.out.println("ISBN: " + fields[0] + ", Title: " + fields[2] + ", Author: " + fields[1] + ", Rating: " + rating);
+                    }
+                }
+            }
+
+            if (!found) {
+                System.out.println("No highly rated books available.");
+            }
         }
     }
 }
